@@ -13,7 +13,7 @@ type IAIService interface {
 }
 
 type ITaskService interface {
-	ExecuteIntent(ctx context.Context, intent domain.ParsedIntent) (domain.TaskResult, error)
+	ExecuteIntent(ctx context.Context, intent domain.ParsedIntent, timezone string) (domain.TaskResult, error)
 }
 
 type BotService struct {
@@ -37,8 +37,8 @@ func (s *BotService) ProcessText(ctx context.Context, text string) string {
 
 	intent, err := s.ai.ParseText(ctx, text, s.timezone)
 	if err != nil {
-		slog.ErrorContext(ctx, "parse text failed", "err", err)
-		return "Не понял задачу. Напиши, что нужно сделать с задачей."
+		slog.ErrorContext(ctx, "parse text failed", "err", err, "input", text)
+		return "Не понял запрос. Попробуй переформулировать."
 	}
 
 	return s.execute(ctx, intent)
@@ -55,11 +55,12 @@ func (s *BotService) ProcessAudio(ctx context.Context, audio []byte, mimeType st
 		return "Не понял голосовое сообщение. Попробуй сказать короче или отправь текстом."
 	}
 
+
 	return s.execute(ctx, intent)
 }
 
 func (s *BotService) execute(ctx context.Context, intent domain.ParsedIntent) string {
-	result, err := s.tasks.ExecuteIntent(ctx, intent)
+	result, err := s.tasks.ExecuteIntent(ctx, intent, s.timezone)
 	if err != nil {
 		slog.ErrorContext(ctx, "execute intent failed", "err", err, "intent_type", intent.Type, "task_title", intent.TaskTitle)
 		return userMessageFromError(err)

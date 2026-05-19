@@ -103,6 +103,26 @@ func (c *Client) UpdateTask(ctx context.Context, task tasks.Task, updates tasksD
 	return resp.toDomain(), nil
 }
 
+func (c *Client) ListTasks(ctx context.Context) ([]tasks.Task, error) {
+	projects, err := c.projects(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []tasks.Task
+	for _, project := range projects {
+		data, err := c.projectData(ctx, project.ID)
+		if err != nil {
+			return nil, err
+		}
+		for _, t := range data.Tasks {
+			t.ProjectID = project.ID
+			result = append(result, t.toDomain())
+		}
+	}
+	return result, nil
+}
+
 func (c *Client) CompleteTask(ctx context.Context, task tasks.Task) error {
 	if task.ProjectID == "" {
 		return errors.New("project id is required to complete task")

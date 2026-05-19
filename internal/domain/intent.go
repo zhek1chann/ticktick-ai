@@ -7,6 +7,8 @@ const (
 	IntentUpdateTask   IntentType = "update_task"
 	IntentCompleteTask IntentType = "complete_task"
 	IntentClarify      IntentType = "clarification_required"
+	IntentBrief        IntentType = "brief"
+	IntentListTasks    IntentType = "list_tasks"
 )
 
 type Priority string
@@ -27,6 +29,8 @@ type ParsedIntent struct {
 	Tags                  []string    `json:"tags,omitempty"`
 	Updates               TaskUpdates `json:"updates,omitempty"`
 	ClarificationQuestion string      `json:"clarification_question,omitempty"`
+	BriefContent          string      `json:"brief_content,omitempty"`
+	ListFilter            string      `json:"list_filter,omitempty"`
 }
 
 type TaskUpdates struct {

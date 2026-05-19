@@ -33,3 +33,15 @@ internal/modules/ticktick    TickTick task execution service and client
 ```
 
 The Telegram module follows the same shape as `olx-parser`: `handler`, `service`, `model`, and `middleware`.
+
+## CI/CD
+
+GitHub Actions runs on pull requests and pushes to `main`:
+
+- `go test ./...`
+- formatting check with `gofmt`
+- binary build
+- Docker image build
+- Docker image push to `ghcr.io/<owner>/<repo>` on `main`
+
+For deployment, pull the published image on your server and run it with `.env` values for `TG_TOKEN`, `GEMINI_API_KEY`, and `TICKTICK_ACCESS_TOKEN`.
